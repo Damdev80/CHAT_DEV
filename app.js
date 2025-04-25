@@ -4,6 +4,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import http from 'http'
 import { Server as SocketServer } from 'socket.io'
+import { configureSockets } from './src/config/socket.io.js'
+import { serverError } from './src/middlewares/error.middlewar.js' 
 
 // Importar rutas
 import userRoutes from './src/routes/user.routes.js'
@@ -26,6 +28,8 @@ app.use('/api/users', userRoutes)
 app.use('/api/roles', roleRoutes)
 app.use('/api/messages', messageRoutes)
 
+app.use(serverError)
+
 // Configurar Socket.io
 const io = new SocketServer(server, {
   cors: {
@@ -34,28 +38,9 @@ const io = new SocketServer(server, {
   }
 })
 
-// Eventos de Socket.io
-io.on('connection', (socket) => {
-  console.log('Usuario conectado:', socket.id)
+configureSockets(io)
 
-  // Evento para recibir mensajes
-  socket.on('send_message', async (data) => {
-    try {
-      // Aquí podrías guardar el mensaje en la base de datos
-      // usando el controlador de mensajes
-      
-      // Emitir el mensaje a todos los clientes conectados
-      io.emit('receive_message', data)
-    } catch (error) {
-      console.error('Error al enviar mensaje:', error)
-    }
-  })
 
-  // Evento cuando un usuario se desconecta
-  socket.on('disconnect', () => {
-    console.log('Usuario desconectado:', socket.id)
-  })
-})
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000
