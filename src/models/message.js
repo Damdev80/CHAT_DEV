@@ -1,3 +1,4 @@
+import { getConnection } from '../config/db.js'
 export class ModelsMessage {
     static async create({ content, sender_id }) {
       const connection = await getConnection()

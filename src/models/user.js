@@ -1,3 +1,4 @@
+import { getConnection } from '../config/db.js'
 export class ModelsUser {
     static async create({ username, email, password, role_id }) {
       const connection = await getConnection()
