@@ -18,12 +18,3 @@ export const getConnection = async () => {
       throw error // Puedes lanzar el error para manejarlo donde lo uses si quieres
     }
   }
-
-
-
-export class ModelsUser {
-
-    static 
-    
-}
-
