@@ -14,4 +14,4 @@ export const userSchema = z.object({
   }).min(8, 'La contraseña debe tener al menos 8 caracteres'),
 
   role_id: z.string().uuid('El ID del rol debe ser un UUID').optional()
-})
+})  
