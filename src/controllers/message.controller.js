@@ -33,6 +33,16 @@
       }
     }
 
+    static async createFromSocket(data) {
+      try {
+        const message = await messageModel.create(data)
+        return message
+      } catch (error) {
+        console.error('Error guardando mensaje desde socket:', error)
+        throw error
+      }
+    }
+
     static async getBySenderId(req, res) {
       try {
         const { senderId } = req.params

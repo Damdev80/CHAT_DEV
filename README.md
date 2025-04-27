@@ -1,4 +1,4 @@
-# CHAT_DEV
+# CHAT_EMPRESARIAL
 
 CHAT_DEV es una aplicación de chat en tiempo real desarrollada con Node.js, Express y Socket.io. Permite la gestión de usuarios, roles y mensajes, integrando autenticación y validaciones.
 

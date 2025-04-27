@@ -4,7 +4,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import http from 'http'
 import { Server as SocketServer } from 'socket.io'
-import { configureSockets } from './src/config/socket.io.js'
+import { configureSocket } from './src/config/socket.io.js'
 import { serverError } from './src/middlewares/error.middlewar.js' 
 
 // Importar rutas
@@ -38,7 +38,9 @@ const io = new SocketServer(server, {
   }
 })
 
-configureSockets(io)
+configureSocket(io)
+
+
 
 
 
