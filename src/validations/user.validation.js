@@ -1,3 +1,4 @@
+// validations/user.validation.js
 import { z } from 'zod'
 
 export const userSchema = z.object({
@@ -11,7 +12,5 @@ export const userSchema = z.object({
 
   password: z.string({
     required_error: 'La contraseña es obligatoria',
-  }).min(8, 'La contraseña debe tener al menos 8 caracteres'),
-
-  role_id: z.string().uuid('El ID del rol debe ser un UUID').optional()
-})  
+  }).min(8, 'La contraseña debe tener al menos 8 caracteres')
+})
