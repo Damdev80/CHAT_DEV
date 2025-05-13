@@ -36,7 +36,7 @@ export class MessageController {
 
   static async createFromSocket(data) {
     try {
-      const message = await messageModel.create(data)
+      const message = await ModelsMessage.create(data)
       return message
     } catch (error) {
       console.error('Error guardando mensaje desde socket:', error)
