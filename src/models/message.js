@@ -1,10 +1,26 @@
 import { getConnection } from '../config/db.js'
+
+function bufferToUuid(buffer) {
+  if (!Buffer.isBuffer(buffer) || buffer.length !== 16) return buffer;
+  return [
+    buffer.toString('hex', 0, 4),
+    buffer.toString('hex', 4, 6),
+    buffer.toString('hex', 6, 8),
+    buffer.toString('hex', 8, 10),
+    buffer.toString('hex', 10, 16)
+  ].join('-');
+}
+
 export class ModelsMessage {
-    static async create({ content, sender_id }) {
+    static async create({ content, sender_id, group_id }) {
+      // Si group_id es un buffer, conviértelo a string
+      if (typeof group_id === 'object' && group_id !== null && group_id.type === 'Buffer') {
+        group_id = bufferToUuid(Buffer.from(group_id.data));
+      }
       const connection = await getConnection()
       const [result] = await connection.execute(
-        'INSERT INTO messages (id, content, sender_id) VALUES (UUID(), ?, ?)',
-        [content, sender_id]
+        'INSERT INTO messages (id, content, sender_id, group_id) VALUES (UUID(), ?, ?, ?)',
+        [content, sender_id, group_id]
       )
       connection.end()
       return result
@@ -13,10 +29,13 @@ export class ModelsMessage {
     static async getById(id) {
       const connection = await getConnection()
       const [rows] = await connection.execute(
-        'SELECT id, content, sender_id, created_at FROM messages WHERE id = ?',
+        'SELECT id, content, sender_id, group_id, created_at FROM messages WHERE id = ?',
         [id]
       )
       connection.end()
+      if (rows[0] && rows[0].group_id) {
+        rows[0].group_id = bufferToUuid(rows[0].group_id)
+      }
       return rows[0]
     }
     
@@ -28,16 +47,22 @@ export class ModelsMessage {
         [sender_id]
       )
       connection.end()
-      return rows
+      return rows.map(row => ({
+        ...row,
+        group_id: row.group_id ? bufferToUuid(row.group_id) : row.group_id
+      }))
     }
   
     static async getAll() {
       const connection = await getConnection()
       const [rows] = await connection.execute(
-        'SELECT m.id, m.content, m.created_at, u.username as sender_name FROM messages m LEFT JOIN users u ON m.sender_id = u.id ORDER BY m.created_at DESC'
+        'SELECT m.id, m.content, m.created_at, m.group_id, u.username as sender_name FROM messages m LEFT JOIN users u ON m.sender_id = u.id ORDER BY m.created_at DESC'
       )
       connection.end()
-      return rows
+      return rows.map(row => ({
+        ...row,
+        group_id: row.group_id ? bufferToUuid(row.group_id) : row.group_id
+      }))
     }
   
     static async update(id, { content }) {

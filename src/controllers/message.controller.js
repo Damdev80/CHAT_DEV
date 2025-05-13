@@ -11,11 +11,11 @@ export class MessageController {
         return res.status(400).json({ errors: result.error.issues })
       }
 
-      const { content } = result.data
+      const { content, group_id } = result.data
       const sender_id = req.user.id // ← Tomar el id del usuario autenticado
 
       // Crear el mensaje
-      await ModelsMessage.create({ content, sender_id })
+      await ModelsMessage.create({ content, sender_id, group_id })
 
       res.status(201).json({ message: 'Mensaje enviado correctamente' })
     } catch (error) {
@@ -36,6 +36,13 @@ export class MessageController {
 
   static async createFromSocket(data) {
     try {
+      // Log para depuración
+      console.log('Mensaje recibido desde socket:', data)
+      // Validación manual extra
+      if (typeof data.group_id !== 'string' || data.group_id.length > 350) {
+        console.error('group_id inválido:', data.group_id)
+        throw new Error('group_id inválido: ' + data.group_id)
+      }
       const message = await ModelsMessage.create(data)
       return message
     } catch (error) {
